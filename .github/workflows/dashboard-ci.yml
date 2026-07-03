@@ -1,0 +1,35 @@
+name: Dashboard CI
+
+# Only runs when changes are made inside the dashboard folder
+on:
+  push:
+    paths:
+      - 'dashboard/**'
+  pull_request:
+    paths:
+      - 'dashboard/**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout the code
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Set up Node.js
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      # Install dependencies
+      - name: Install dependencies
+        run: npm install
+        working-directory: dashboard
+
+      # Build the dashboard
+      - name: Build
+        run: npm run build
+        working-directory: dashboard
