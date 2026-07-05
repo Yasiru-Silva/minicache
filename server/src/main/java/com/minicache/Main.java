@@ -1,9 +1,12 @@
 package com.minicache;
 
-// Entry point for MiniCache server
+import com.minicache.server.TcpServer;
+
 public class Main {
 
     public static void main(String[] args) {
-        System.out.println("MiniCache server starting...");
+        // 6379 is the default Redis port — we use the same for familiarity
+        TcpServer server = new TcpServer(6379);
+        server.start();
     }
 }
