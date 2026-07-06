@@ -1,5 +1,7 @@
 package com.minicache.server;
 
+import com.minicache.store.Store;
+
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -10,25 +12,25 @@ public class TcpServer {
 
     private final int port;
     private final ExecutorService threadPool;
+    private final CommandHandler commandHandler;
 
     public TcpServer(int port) {
         this.port = port;
-        // Creates a pool of 10 threads to handle up to 10 simultaneous clients
         this.threadPool = Executors.newFixedThreadPool(10);
+        // Single shared store and command handler across all client threads
+        Store store = new Store();
+        this.commandHandler = new CommandHandler(store);
     }
 
     public void start() {
         try (ServerSocket serverSocket = new ServerSocket(port)) {
             System.out.println("MiniCache listening on port " + port);
 
-            // Keep accepting new client connections forever
             while (true) {
-                // Blocks here until a client connects
                 Socket clientSocket = serverSocket.accept();
                 System.out.println("New client connected: " + clientSocket.getInetAddress());
-
-                // Hand off the client to a thread from the pool
-                threadPool.submit(new ClientHandler(clientSocket));
+                // Pass the shared commandHandler to each client thread
+                threadPool.submit(new ClientHandler(clientSocket, commandHandler));
             }
 
         } catch (IOException e) {
