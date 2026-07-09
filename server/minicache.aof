@@ -1,0 +1,2 @@
+SET name john
+SET session abc123 EX 3
