@@ -1,8 +1,5 @@
 package com.minicache.server;
 
-import com.minicache.store.Store;
-import com.minicache.store.TTLManager;
-
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -15,16 +12,10 @@ public class TcpServer {
     private final ExecutorService threadPool;
     private final CommandHandler commandHandler;
 
-    public TcpServer(int port) {
+    public TcpServer(int port, CommandHandler commandHandler) {
         this.port = port;
         this.threadPool = Executors.newFixedThreadPool(10);
-
-        // Wire Store and TTLManager together
-        Store store = new Store();
-        TTLManager ttlManager = new TTLManager(store);
-        store.setTTLManager(ttlManager);
-
-        this.commandHandler = new CommandHandler(store);
+        this.commandHandler = commandHandler;
     }
 
     public void start() {
