@@ -14,32 +14,25 @@ public class TestClient {
         PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
         BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
-        // Test PING
-        sendAndReceive(out, in, "PING");
-
-        // Test SET
+        // Test basic SET and GET still works
         sendAndReceive(out, in, "SET name john");
-        sendAndReceive(out, in, "SET age 25");
-
-        // Test GET
         sendAndReceive(out, in, "GET name");
-        sendAndReceive(out, in, "GET age");
-        sendAndReceive(out, in, "GET unknown");
 
-        // Test EXISTS
-        sendAndReceive(out, in, "EXISTS name");
-        sendAndReceive(out, in, "EXISTS unknown");
+        // Test SET with TTL (expires in 3 seconds)
+        sendAndReceive(out, in, "SET session abc123 EX 3");
+        sendAndReceive(out, in, "GET session");
+        sendAndReceive(out, in, "EXISTS session");
 
-        // Test KEYS
-        sendAndReceive(out, in, "KEYS");
+        // Wait 4 seconds for key to expire
+        System.out.println("--- Waiting 4 seconds for TTL to expire ---");
+        Thread.sleep(4000);
 
-        // Test DEL
-        sendAndReceive(out, in, "DEL name");
+        // Key should be gone now
+        sendAndReceive(out, in, "GET session");
+        sendAndReceive(out, in, "EXISTS session");
+
+        // name should still be there (no TTL)
         sendAndReceive(out, in, "GET name");
-        sendAndReceive(out, in, "KEYS");
-
-        // Test invalid command
-        sendAndReceive(out, in, "INVALID foo");
 
         socket.close();
         System.out.println("Connection closed");
