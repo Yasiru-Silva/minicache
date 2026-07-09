@@ -16,7 +16,6 @@ public class CommandHandler {
         this.parser = new ProtocolParser();
     }
 
-    // Takes a raw input line, parses it, executes it, returns a response string
     public String handle(String rawInput) {
         Command command = parser.parse(rawInput);
 
@@ -29,6 +28,17 @@ public class CommandHandler {
                 return "PONG";
 
             case "SET":
+                // Check if EX argument is present
+                if (command.getArgs().size() == 4 &&
+                    command.getArg(2).equalsIgnoreCase("EX")) {
+                    try {
+                        int ttlSeconds = Integer.parseInt(command.getArg(3));
+                        store.set(command.getArg(0), command.getArg(1), ttlSeconds);
+                        return "OK";
+                    } catch (NumberFormatException e) {
+                        return "ERROR EX value must be an integer";
+                    }
+                }
                 store.set(command.getArg(0), command.getArg(1));
                 return "OK";
 

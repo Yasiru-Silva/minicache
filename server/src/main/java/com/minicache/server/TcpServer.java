@@ -1,6 +1,7 @@
 package com.minicache.server;
 
 import com.minicache.store.Store;
+import com.minicache.store.TTLManager;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -17,8 +18,12 @@ public class TcpServer {
     public TcpServer(int port) {
         this.port = port;
         this.threadPool = Executors.newFixedThreadPool(10);
-        // Single shared store and command handler across all client threads
+
+        // Wire Store and TTLManager together
         Store store = new Store();
+        TTLManager ttlManager = new TTLManager(store);
+        store.setTTLManager(ttlManager);
+
         this.commandHandler = new CommandHandler(store);
     }
 
@@ -29,7 +34,6 @@ public class TcpServer {
             while (true) {
                 Socket clientSocket = serverSocket.accept();
                 System.out.println("New client connected: " + clientSocket.getInetAddress());
-                // Pass the shared commandHandler to each client thread
                 threadPool.submit(new ClientHandler(clientSocket, commandHandler));
             }
 
