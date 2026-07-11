@@ -4,3 +4,5 @@ SET name john
 SET session abc123 EX 3
 SET name john
 SET session abc123 EX 3
+SET name john
+SET session abc123 EX 3

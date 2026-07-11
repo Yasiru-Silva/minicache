@@ -1,0 +1,17 @@
+services:
+  minicache-server:
+    build: ./server
+    ports:
+      - "6379:6379"   # TCP port for clients
+      - "8081:8081"   # HTTP port for dashboard
+    volumes:
+      - ./data:/app/data  # AOF log persists outside container
+    environment:
+      - AOF_FILE_PATH=/app/data/minicache.aof
+
+  dashboard:
+    build: ./dashboard
+    ports:
+      - "80:80"
+    depends_on:
+      - minicache-server
