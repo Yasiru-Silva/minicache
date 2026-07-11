@@ -10,7 +10,9 @@ import com.minicache.store.TTLManager;
 
 public class Main {
 
-    private static final String AOF_FILE_PATH = "minicache.aof";
+    private static final String AOF_FILE_PATH = System.getenv("AOF_FILE_PATH") != null
+        ? System.getenv("AOF_FILE_PATH")
+        : "minicache.aof";
     private static final int TCP_PORT = 6379;
     private static final int HTTP_PORT = 8081;
 
